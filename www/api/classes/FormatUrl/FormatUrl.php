@@ -15,7 +15,6 @@ class FormatUrl
 
     private static function includeDB()
     {
-
         try {
             $user = 'root';
             $password = 'root';
@@ -27,20 +26,17 @@ class FormatUrl
             ));
             return  $pdo;
         } catch (PDOException $e) {
-            return  json_encode(["error" => [
-                                    ["code" => $e->getCode()],
-                                    ["message" => "Нет связи с базой данных"]
-                                 ]
-                    ]);
-//            print "Error!: " . $e->getMessage() . "<br/>";
-//            die();
-//            if($e->getCode() == 1049) {
-//                echo json_encode(["error" =>'Database does not exist!']);
-//            }
+            return json_encode(["error" =>
+                [
+                    ["code" => $e->getCode()],
+                    ["message" => "Нет связи с базой данных"]
+                ]
+            ]);
         }
 
     }
-    public static function RedirectLink($val){
+    public static function RedirectLink($val)
+    {
         self::$pdo = self::includeDB();
         $link = self::selectDB('url', 'short', $val);
         if (!$link) {
@@ -52,7 +48,7 @@ class FormatUrl
             return $link;
         }
     }
-    public static function selectDB($result_column, $select_column, $val )
+    public static function selectDB($result_column, $select_column, $val)
     {
         $sql = 'SELECT '.$result_column.' FROM short_url WHERE '.$select_column.' = :code';
         $query = self::$pdo -> prepare($sql);
@@ -65,14 +61,12 @@ class FormatUrl
 
     public function checkUrl()
     {
-            if (!Validator::getResponseCode($this->link)) {
-                return json_encode(["error" => [
-                    ["status" => 400],
-                    ["message" => "Проверьте правильность введенной ссылки "]
-                ]]);
-            }
-
-
+        if (!Validator::getResponseCode($this->link)) {
+            return json_encode(["error" => [
+                ["status" => 400],
+                ["message" => "Проверьте правильность введенной ссылки "]
+            ]]);
+        }
 
         self::$pdo = self::includeDB();
         $short_table = self::selectDB('short', 'url', $this->link);
@@ -97,7 +91,6 @@ class FormatUrl
         } else {
             $this->insertShort($code);
         }
-
     }
 
     public function insertShort($gen_code)
@@ -108,6 +101,5 @@ class FormatUrl
         $query -> execute(['url' => $this->link, 'short' => $gen_code]);
         $this->short_url = $gen_code;
         return $gen_code;
-
     }
 }
